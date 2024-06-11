@@ -17,7 +17,7 @@ jobs:
       run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
     
     - name: Build
-      run: arch -x86_64 make
+      run: arch -x86_64 make CFLAGS="-DTEST_ENV"
     
     - name: Generate token
       run: arch -x86_64 ./token-generator
