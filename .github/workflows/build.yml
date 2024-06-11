@@ -5,6 +5,8 @@ on:
     branches: [ "main", "novalidation-test" ]
   pull_request:
     branches: [ "main" ]
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -17,7 +19,32 @@ jobs:
       run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
     
     - name: Build
-      run: arch -x86_64 make CFLAGS="-DTEST_ENV"
+      run: arch -x86_64 make
     
     - name: Generate token
       run: arch -x86_64 ./token-generator
+
+    - name: Archive binary
+      run: tar -czvf token-generator.tar.gz token-generator
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: token-generator.tar.gz
+        path: token-generator.tar.gz
+
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      env:
+        GH_TR: ${{ secrets.GH_TR }}
+      with:
+        tag_name: ${{ github.ref }}
+        files: token-generator.tar.gz
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        token: ${{ secrets.GH_TR }}
+        repository: ${{ github.repository }}
+        retain_days: 1
+        keep_minimum_runs: 8
