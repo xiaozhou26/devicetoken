@@ -1,23 +1,23 @@
-name: macOS DeviceCheck
+name: Makefile CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "main", "novalidation-test" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: macos-latest
-
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Set up Xcode
-      run: |
-        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
-
-    - name: Compile and run Objective-C code
-      run: |
-        # Compile the Objective-C code
-        clang -fobjc-arc -framework Foundation -framework DeviceCheck token-generator.m -o devicecheck
-        
-        # Run the compiled binary
-        ./devicecheck
+    - name: Install dependencies
+      run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+    
+    - name: Build
+      run: arch -x86_64 make
+    
+    - name: Generate token
+      run: arch -x86_64 ./token-generator
