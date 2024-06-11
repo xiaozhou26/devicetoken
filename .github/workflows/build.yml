@@ -34,11 +34,12 @@ jobs:
         path: token-generator.tar.gz
 
     - name: Create release
+      id: create_release
       uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
+        tag_name: v1.0.0
         files: token-generator.tar.gz
 
     - name: Delete workflow runs
